@@ -273,8 +273,9 @@ export function AddTopicModal({
   onClose: () => void;
   onSubmit: (title: string, folderId: string, studiedDate: string) => Promise<void>;
 }) {
+  const todayStr = getTodayDateString();
   const [title, setTitle] = useState("");
-  const [studiedDate, setStudiedDate] = useState<string>(getTodayDateString());
+  const [studiedDate, setStudiedDate] = useState<string>(todayStr);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -287,16 +288,18 @@ export function AddTopicModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folder || !title.trim()) return;
+    const finalDate = studiedDate && studiedDate <= todayStr ? studiedDate : todayStr;
     setIsSubmitting(true);
     try {
-      await onSubmit(title.trim(), folder.id, studiedDate || getTodayDateString());
+      await onSubmit(title.trim(), folder.id, finalDate);
       onClose();
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const computedNextDate = addDays(studiedDate || getTodayDateString(), firstIntervalDays);
+  const safeStudiedDate = studiedDate && studiedDate <= todayStr ? studiedDate : todayStr;
+  const computedNextDate = addDays(safeStudiedDate, firstIntervalDays);
   const displayScheduled = formatDisplayDate(computedNextDate);
 
   return (
@@ -344,13 +347,21 @@ export function AddTopicModal({
                 <span>Date Studied</span>
               </span>
               <span className="text-[11px] font-normal text-slate-400 dark:text-slate-500">
-                (Defaults to today)
+                (Up to today)
               </span>
             </label>
             <input
               type="date"
+              max={todayStr}
               value={studiedDate}
-              onChange={(e) => setStudiedDate(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && val > todayStr) {
+                  setStudiedDate(todayStr);
+                } else {
+                  setStudiedDate(val);
+                }
+              }}
               required
               className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
