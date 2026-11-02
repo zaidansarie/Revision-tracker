@@ -203,13 +203,14 @@ export async function createTopic(
   title: string,
   folderId: string,
   firstIntervalDays: number = 1,
+  studiedDate: string = getTodayDateString(),
   userId: string = "zaid"
 ): Promise<Topic> {
   const cleanTitle = title.trim();
   if (!cleanTitle) throw new Error("Topic title cannot be empty");
 
-  const today = getTodayDateString();
-  const nextRevisionDate = addDays(today, firstIntervalDays);
+  const baseDate = studiedDate || getTodayDateString();
+  const nextRevisionDate = addDays(baseDate, firstIntervalDays);
 
   if (isSupabaseConfigured && supabase) {
     const { data, error } = await supabase

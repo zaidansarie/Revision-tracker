@@ -134,9 +134,9 @@ export default function HomePage() {
   };
 
   // Topic CRUD
-  const handleAddTopic = async (title: string, folderId: string) => {
+  const handleAddTopic = async (title: string, folderId: string, studiedDate: string) => {
     const firstIntervalDays = settings.intervals[0] || 1;
-    await createTopic(title, folderId, firstIntervalDays, "zaid");
+    await createTopic(title, folderId, firstIntervalDays, studiedDate, "zaid");
     await loadData();
   };
 

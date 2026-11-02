@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Folder, Topic } from "@/types";
-import { X, FolderPlus, Edit2, Trash2, Plus, AlertTriangle } from "lucide-react";
+import { X, FolderPlus, Edit2, Trash2, Plus, AlertTriangle, Calendar } from "lucide-react";
+import { getTodayDateString, addDays, formatDisplayDate } from "@/lib/date-utils";
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -270,13 +271,17 @@ export function AddTopicModal({
   firstIntervalDays: number;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string, folderId: string) => Promise<void>;
+  onSubmit: (title: string, folderId: string, studiedDate: string) => Promise<void>;
 }) {
   const [title, setTitle] = useState("");
+  const [studiedDate, setStudiedDate] = useState<string>(getTodayDateString());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isOpen) setTitle("");
+    if (isOpen) {
+      setTitle("");
+      setStudiedDate(getTodayDateString());
+    }
   }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -284,12 +289,15 @@ export function AddTopicModal({
     if (!folder || !title.trim()) return;
     setIsSubmitting(true);
     try {
-      await onSubmit(title.trim(), folder.id);
+      await onSubmit(title.trim(), folder.id, studiedDate || getTodayDateString());
       onClose();
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const computedNextDate = addDays(studiedDate || getTodayDateString(), firstIntervalDays);
+  const displayScheduled = formatDisplayDate(computedNextDate);
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
@@ -329,12 +337,31 @@ export function AddTopicModal({
             />
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Date Studied</span>
+              </span>
+              <span className="text-[11px] font-normal text-slate-400 dark:text-slate-500">
+                (Defaults to today)
+              </span>
+            </label>
+            <input
+              type="date"
+              value={studiedDate}
+              onChange={(e) => setStudiedDate(e.target.value)}
+              required
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
           <div className="p-3 bg-slate-100 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-400">
-            Initial revision will be scheduled{" "}
+            Initial revision will be scheduled for{" "}
             <span className="font-semibold text-indigo-600 dark:text-indigo-300">
-              {firstIntervalDays === 1 ? "1 day later" : `${firstIntervalDays} days later`}
+              {displayScheduled}
             </span>{" "}
-            based on your settings.
+            ({firstIntervalDays === 1 ? "1 day" : `${firstIntervalDays} days`} after studied date).
           </div>
         </div>
 
@@ -348,7 +375,7 @@ export function AddTopicModal({
           </button>
           <button
             type="submit"
-            disabled={!title.trim() || isSubmitting}
+            disabled={!title.trim() || !studiedDate || isSubmitting}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs sm:text-sm font-medium transition shadow-md shadow-indigo-600/30 disabled:opacity-50"
           >
             {isSubmitting ? "Adding..." : "Add Topic"}
