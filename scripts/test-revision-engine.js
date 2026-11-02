@@ -197,11 +197,13 @@ runTest("Severe delay: Scheduled 15 days ago, completed today", () => {
   assert.strictEqual(result.nextDate, "2026-11-09");
 });
 
-runTest("Early revision: Topic due in 3 days, but user studies and marks it today", () => {
+runTest("Early revision prevention: Topics scheduled in the future cannot be marked revised", () => {
   const today = "2026-11-02";
-  // Next revision calculated from the actual completion date (today)
-  const result = calculateNextRevision(0, defaultIntervals, today);
-  assert.strictEqual(result.nextDate, "2026-11-05");
+  const futureScheduledDate = "2026-11-05"; // Due in 3 days
+  
+  // Guard check: is it allowed to revise early?
+  const canRevise = isDueTodayOrPast(futureScheduledDate, today);
+  assert.strictEqual(canRevise, false, "Topics scheduled in the future must not be allowed to revise early");
 });
 
 // --- SUITE 5: Past 'Date Studied' & Editing Study Date ---
@@ -321,3 +323,4 @@ if (passedTests === totalTests) {
 } else {
   process.exit(1);
 }
+

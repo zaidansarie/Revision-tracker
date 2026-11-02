@@ -114,8 +114,13 @@ export default function HomePage() {
     }
   }, [router, loadData]);
 
-  // Handle Mark Revised
+  // Handle Mark Revised (Strictly only allowed if due today or overdue)
   const handleMarkRevised = async (topic: Topic) => {
+    if (topic.next_revision_date > todayStr) {
+      console.warn("Early revision is not allowed. Topic is not due yet.");
+      return;
+    }
+
     const { nextIndex, nextDate } = calculateNextRevision(
       topic.current_interval_index,
       settings.intervals,
