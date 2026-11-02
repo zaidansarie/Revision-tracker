@@ -40,13 +40,14 @@ CREATE TABLE IF NOT EXISTS public.user_settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id TEXT UNIQUE NOT NULL,
     intervals JSONB NOT NULL DEFAULT '[1, 3, 7, 30]'::jsonb,
+    theme TEXT NOT NULL DEFAULT 'dark',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Insert default settings for zaid if not exists
-INSERT INTO public.user_settings (user_id, intervals)
-VALUES ('zaid', '[1, 3, 7, 30]'::jsonb)
+INSERT INTO public.user_settings (user_id, intervals, theme)
+VALUES ('zaid', '[1, 3, 7, 30]'::jsonb, 'dark')
 ON CONFLICT (user_id) DO NOTHING;
 
 -- Row Level Security (RLS) policies

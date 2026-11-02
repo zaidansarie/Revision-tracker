@@ -33,3 +33,4 @@ export function isClientAuthenticated(): boolean {
 
   return Boolean(cookieVal || localVal);
 }
+

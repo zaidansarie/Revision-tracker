@@ -9,6 +9,7 @@ const LOCAL_STORAGE_KEY_SETTINGS = "zaidrev_settings";
 const DEFAULT_SETTINGS: UserSettings = {
   user_id: "zaid",
   intervals: [1, 3, 7, 30],
+  theme: "dark",
 };
 
 function getLocal<T>(key: string, fallback: T): T {
@@ -44,6 +45,7 @@ export async function getUserSettings(userId: string = "zaid"): Promise<UserSett
         id: data.id,
         user_id: data.user_id,
         intervals: Array.isArray(data.intervals) ? data.intervals : DEFAULT_SETTINGS.intervals,
+        theme: data.theme === "light" ? "light" : "dark",
       };
     }
 
@@ -51,7 +53,7 @@ export async function getUserSettings(userId: string = "zaid"): Promise<UserSett
       // Record doesn't exist, create it
       const { data: created, error: createErr } = await supabase
         .from("user_settings")
-        .insert({ user_id: userId, intervals: DEFAULT_SETTINGS.intervals })
+        .insert({ user_id: userId, intervals: DEFAULT_SETTINGS.intervals, theme: "dark" })
         .select()
         .single();
       if (created && !createErr) {
@@ -65,7 +67,8 @@ export async function getUserSettings(userId: string = "zaid"): Promise<UserSett
 
 export async function saveUserSettings(
   userId: string = "zaid",
-  intervals: number[]
+  intervals: number[],
+  theme: "dark" | "light" = "dark"
 ): Promise<UserSettings> {
   const sanitized = intervals.filter((n) => typeof n === "number" && n > 0);
   const finalIntervals = sanitized.length > 0 ? sanitized : [1, 3, 7, 30];
@@ -73,7 +76,10 @@ export async function saveUserSettings(
   if (isSupabaseConfigured && supabase) {
     const { data, error } = await supabase
       .from("user_settings")
-      .upsert({ user_id: userId, intervals: finalIntervals }, { onConflict: "user_id" })
+      .upsert(
+        { user_id: userId, intervals: finalIntervals, theme },
+        { onConflict: "user_id" }
+      )
       .select()
       .single();
 
@@ -85,6 +91,7 @@ export async function saveUserSettings(
   const updated: UserSettings = {
     user_id: userId,
     intervals: finalIntervals,
+    theme,
     updated_at: new Date().toISOString(),
   };
   setLocal(LOCAL_STORAGE_KEY_SETTINGS, updated);
@@ -282,7 +289,6 @@ export async function markTopicRevised(
   revisedDate: string = getTodayDateString()
 ): Promise<void> {
   if (isSupabaseConfigured && supabase) {
-    // Increment revision_count, update current_interval_index, last_revised_at, next_revision_date
     const { data: current } = await supabase
       .from("topics")
       .select("revision_count")

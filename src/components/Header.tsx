@@ -33,18 +33,18 @@ export default function Header({ onOpenSettings, currentDateFormatted }: HeaderP
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+    <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       <div className="max-w-5xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               ZaidRev
             </h1>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <Calendar className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
               <span>{currentDateFormatted}</span>
             </div>
           </div>
@@ -55,29 +55,29 @@ export default function Header({ onOpenSettings, currentDateFormatted }: HeaderP
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
-            className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-slate-800 border border-slate-700 text-slate-200 transition"
+            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:active:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
               <button
                 onClick={() => {
                   setMenuOpen(false);
                   onOpenSettings();
                 }}
-                className="w-full px-4 py-2.5 text-left text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition"
+                className="w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5 transition"
               >
-                <SettingsIcon className="w-4 h-4 text-indigo-400" />
+                <SettingsIcon className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
                 <span>Settings</span>
               </button>
 
-              <div className="my-1 border-t border-slate-800" />
+              <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
 
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-2.5 text-left text-sm text-rose-400 hover:bg-rose-500/10 flex items-center gap-2.5 transition"
+                className="w-full px-4 py-2.5 text-left text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 transition"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Log Out</span>

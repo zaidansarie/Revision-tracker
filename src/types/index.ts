@@ -23,5 +23,6 @@ export interface UserSettings {
   id?: string;
   user_id: string;
   intervals: number[]; // e.g. [1, 3, 7, 30]
+  theme?: "dark" | "light";
   updated_at?: string;
 }

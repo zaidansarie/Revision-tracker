@@ -13,8 +13,8 @@ interface BaseModalProps {
 function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 transition-colors">
         {children}
       </div>
     </div>
@@ -53,17 +53,17 @@ export function CreateFolderModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <FolderPlus className="w-5 h-5" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white">New Folder</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">New Folder</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -71,7 +71,7 @@ export function CreateFolderModal({
 
         <div className="p-4 sm:p-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
               Folder Name
             </label>
             <input
@@ -81,16 +81,16 @@ export function CreateFolderModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Physics, Operating Systems, Spanish"
               required
-              className="w-full px-3.5 py-2.5 bg-slate-950/60 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
 
-        <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+            className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
           >
             Cancel
           </button>
@@ -141,17 +141,17 @@ export function RenameFolderModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Edit2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white">Rename Folder</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Rename Folder</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -159,7 +159,7 @@ export function RenameFolderModal({
 
         <div className="p-4 sm:p-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
               Folder Name
             </label>
             <input
@@ -168,16 +168,16 @@ export function RenameFolderModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 bg-slate-950/60 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
 
-        <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+            className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
           >
             Cancel
           </button>
@@ -222,26 +222,26 @@ export function DeleteFolderModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <div className="p-5 space-y-4">
-        <div className="h-12 w-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
           <Trash2 className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-white">Delete Folder</h3>
-          <p className="text-sm text-slate-300 mt-1">
-            Are you sure you want to delete <span className="font-semibold text-white">"{folder?.name}"</span>?
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Folder</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+            Are you sure you want to delete <span className="font-semibold text-slate-900 dark:text-white">"{folder?.name}"</span>?
           </p>
-          <p className="text-xs text-rose-400 mt-2 flex items-center gap-1.5">
+          <p className="text-xs text-rose-600 dark:text-rose-400 mt-2 flex items-center gap-1.5">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             <span>All topics inside this folder will also be permanently deleted.</span>
           </p>
         </div>
       </div>
 
-      <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+          className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
         >
           Cancel
         </button>
@@ -294,20 +294,20 @@ export function AddTopicModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Plus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white">Add New Topic</h3>
-              <p className="text-xs text-slate-400">In folder: {folder?.name}</p>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Add New Topic</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">In folder: {folder?.name}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -315,7 +315,7 @@ export function AddTopicModal({
 
         <div className="p-4 sm:p-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
               Topic Title
             </label>
             <input
@@ -325,24 +325,24 @@ export function AddTopicModal({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Newton's 2nd Law, Memory Hierarchy"
               required
-              className="w-full px-3.5 py-2.5 bg-slate-950/60 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-xl text-xs text-slate-400">
+          <div className="p-3 bg-slate-100 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-400">
             Initial revision will be scheduled{" "}
-            <span className="font-semibold text-indigo-300">
+            <span className="font-semibold text-indigo-600 dark:text-indigo-300">
               {firstIntervalDays === 1 ? "1 day later" : `${firstIntervalDays} days later`}
             </span>{" "}
             based on your settings.
           </div>
         </div>
 
-        <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+            className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
           >
             Cancel
           </button>
@@ -393,17 +393,17 @@ export function RenameTopicModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Edit2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white">Rename Topic</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Rename Topic</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -411,7 +411,7 @@ export function RenameTopicModal({
 
         <div className="p-4 sm:p-5 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
               Topic Title
             </label>
             <input
@@ -420,16 +420,16 @@ export function RenameTopicModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 bg-slate-950/60 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
 
-        <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+            className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
           >
             Cancel
           </button>
@@ -474,22 +474,22 @@ export function DeleteTopicModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <div className="p-5 space-y-4">
-        <div className="h-12 w-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
           <Trash2 className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-white">Delete Topic</h3>
-          <p className="text-sm text-slate-300 mt-1">
-            Are you sure you want to delete <span className="font-semibold text-white">"{topic?.title}"</span>?
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete Topic</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+            Are you sure you want to delete <span className="font-semibold text-slate-900 dark:text-white">"{topic?.title}"</span>?
           </p>
         </div>
       </div>
 
-      <div className="p-4 border-t border-slate-800 flex items-center justify-end gap-2 bg-slate-900/60">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-xs sm:text-sm text-slate-400 hover:text-white transition"
+          className="px-4 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
         >
           Cancel
         </button>

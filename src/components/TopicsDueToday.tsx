@@ -44,13 +44,13 @@ export default function TopicsDueToday({
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Topics to Revise Today</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
               {filteredTopics.length}
             </span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Review and check off items scheduled for today
           </p>
         </div>
@@ -63,13 +63,15 @@ export default function TopicsDueToday({
           className={`px-3.5 py-1.5 rounded-xl font-medium transition whitespace-nowrap flex items-center gap-1.5 ${
             selectedFolderId === "all"
               ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-              : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+              : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800"
           }`}
         >
           <span>All</span>
           <span
             className={`text-xs px-1.5 py-0.2 rounded-md ${
-              selectedFolderId === "all" ? "bg-indigo-700 text-white" : "bg-slate-800 text-slate-400"
+              selectedFolderId === "all"
+                ? "bg-indigo-700 text-white"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
             }`}
           >
             {topics.length}
@@ -86,14 +88,16 @@ export default function TopicsDueToday({
               className={`px-3.5 py-1.5 rounded-xl font-medium transition whitespace-nowrap flex items-center gap-1.5 ${
                 isSelected
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                  : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800"
               }`}
             >
               <FolderIcon className="w-3.5 h-3.5" />
               <span>{folder.name}</span>
               <span
                 className={`text-xs px-1.5 py-0.2 rounded-md ${
-                  isSelected ? "bg-indigo-700 text-white" : "bg-slate-800 text-slate-400"
+                  isSelected
+                    ? "bg-indigo-700 text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                 }`}
               >
                 {countInFolder}
@@ -105,12 +109,12 @@ export default function TopicsDueToday({
 
       {/* List of topics */}
       {filteredTopics.length === 0 ? (
-        <div className="p-8 sm:p-12 text-center rounded-2xl bg-slate-900/40 border border-slate-800/80 flex flex-col items-center justify-center">
-          <div className="h-12 w-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3">
+        <div className="p-8 sm:p-12 text-center rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 flex flex-col items-center justify-center shadow-sm">
+          <div className="h-12 w-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
             <Sparkles className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-semibold text-slate-200">No revisions due today</h3>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-sm">
+          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">No revisions due today</h3>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
             {selectedFolderId === "all"
               ? "Great job! All your topics are up to date for today."
               : "No topics due for revision in this folder today."}
@@ -127,11 +131,11 @@ export default function TopicsDueToday({
             return (
               <div
                 key={topic.id}
-                className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between gap-3 shadow-sm group"
+                className="p-4 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col justify-between gap-3 shadow-sm group"
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-800 text-indigo-300 border border-slate-700/60 max-w-[180px] truncate">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-700/60 max-w-[180px] truncate">
                       <FolderIcon className="w-3 h-3 flex-shrink-0" />
                       <span className="truncate">{folderName}</span>
                     </span>
@@ -139,8 +143,8 @@ export default function TopicsDueToday({
                     <span
                       className={`text-[11px] font-medium px-2 py-0.5 rounded-md flex items-center gap-1 ${
                         isOverdue
-                          ? "bg-rose-500/10 text-rose-300 border border-rose-500/20"
-                          : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                          ? "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/20"
+                          : "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20"
                       }`}
                     >
                       <Clock className="w-3 h-3" />
@@ -148,11 +152,11 @@ export default function TopicsDueToday({
                     </span>
                   </div>
 
-                  <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition break-words">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-white transition break-words">
                     {topic.title}
                   </h3>
 
-                  <div className="text-xs text-slate-400 flex items-center gap-2">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <span>Revision #{topic.revision_count + 1}</span>
                     <span>•</span>
                     <span>Stage {topic.current_interval_index + 1}</span>

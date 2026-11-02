@@ -44,6 +44,7 @@ export default function HomePage() {
   const [settings, setSettings] = useState<UserSettings>({
     user_id: "zaid",
     intervals: [1, 3, 7, 30],
+    theme: "dark",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -77,6 +78,13 @@ export default function HomePage() {
       setFolders(fList);
       setTopics(tList);
       setSettings(sObj);
+
+      // Apply theme to html root
+      if (sObj.theme === "light") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
     } catch (err) {
       console.error("Failed to load revision data:", err);
     } finally {
@@ -143,9 +151,14 @@ export default function HomePage() {
   };
 
   // Settings Save
-  const handleSaveSettings = async (intervals: number[]) => {
-    const updated = await saveUserSettings("zaid", intervals);
+  const handleSaveSettings = async (intervals: number[], theme: "dark" | "light") => {
+    const updated = await saveUserSettings("zaid", intervals, theme);
     setSettings(updated);
+    if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
   };
 
   // Topics due today across all folders
@@ -165,15 +178,15 @@ export default function HomePage() {
 
   if (!authChecked || isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
         <div className="h-10 w-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-medium text-slate-400">Loading ZaidRev...</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading ZaidRev...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-150">
       {/* Top Header with Brand, Current Date & Menu */}
       <Header
         currentDateFormatted={formattedToday}
