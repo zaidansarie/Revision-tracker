@@ -5,11 +5,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("zaidrev_session")?.value;
 
-  // Allow static files, api routes, and login page
+  // Allow static files, PWA assets, api routes, and login page
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
-    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/icons") ||
+    pathname === "/manifest.json" ||
+    pathname === "/sw.js" ||
+    pathname === "/favicon.ico" ||
+    pathname.includes(".") ||
     pathname === "/login"
   ) {
     // If user is already logged in and tries to go to /login, redirect to /
@@ -30,4 +34,3 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
-
