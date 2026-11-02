@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.topics (
     title TEXT NOT NULL,
     revision_count INTEGER DEFAULT 0 NOT NULL,
     current_interval_index INTEGER DEFAULT 0 NOT NULL,
+    studied_date DATE,
     last_revised_at DATE,
     next_revision_date DATE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,

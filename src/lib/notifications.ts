@@ -129,3 +129,4 @@ export async function sendTestNotification(): Promise<void> {
     "Morning revision notifications are working on this device!"
   );
 }
+

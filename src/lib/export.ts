@@ -81,3 +81,4 @@ export function exportToCSV(folders: Folder[], topics: Topic[]): void {
   downloadAnchor.remove();
   URL.revokeObjectURL(url);
 }
+

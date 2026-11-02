@@ -98,3 +98,4 @@ if (!fs.existsSync(iconsDir)) {
 fs.writeFileSync(path.join(iconsDir, 'icon-192.png'), createSimplePNG(192, 192, 99, 102, 241));
 fs.writeFileSync(path.join(iconsDir, 'icon-512.png'), createSimplePNG(512, 512, 99, 102, 241));
 console.log('Generated PNG icons successfully.');
+

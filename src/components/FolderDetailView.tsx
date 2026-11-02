@@ -284,7 +284,7 @@ export default function FolderDetailView({
                             className="w-full px-3 py-2 text-left text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 transition"
                           >
                             <Edit2 className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-                            <span>Rename</span>
+                            <span>Edit Topic</span>
                           </button>
                           <button
                             onClick={() => {

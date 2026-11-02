@@ -13,6 +13,7 @@ export interface Topic {
   title: string;
   revision_count: number;
   current_interval_index: number;
+  studied_date?: string; // YYYY-MM-DD
   last_revised_at: string | null;
   next_revision_date: string; // YYYY-MM-DD
   created_at: string;

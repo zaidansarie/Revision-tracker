@@ -397,36 +397,51 @@ export function AddTopicModal({
   );
 }
 
-// 5. Rename Topic Modal
-export function RenameTopicModal({
+// 5. Edit Topic Modal (Rename title & Edit studied date)
+export function EditTopicModal({
   topic,
+  currentIntervalDays,
   isOpen,
   onClose,
   onSubmit,
 }: {
   topic: Topic | null;
+  currentIntervalDays: number;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (topicId: string, newTitle: string) => Promise<void>;
+  onSubmit: (topicId: string, newTitle: string, newStudiedDate: string) => Promise<void>;
 }) {
+  const todayStr = getTodayDateString();
   const [title, setTitle] = useState("");
+  const [studiedDate, setStudiedDate] = useState<string>(todayStr);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (topic) setTitle(topic.title);
-  }, [topic]);
+    if (topic) {
+      setTitle(topic.title);
+      const initialDate =
+        topic.studied_date ||
+        (topic.created_at ? topic.created_at.split("T")[0] : todayStr);
+      setStudiedDate(initialDate <= todayStr ? initialDate : todayStr);
+    }
+  }, [topic, todayStr]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!topic || !title.trim()) return;
+    const finalDate = studiedDate && studiedDate <= todayStr ? studiedDate : todayStr;
     setIsSubmitting(true);
     try {
-      await onSubmit(topic.id, title.trim());
+      await onSubmit(topic.id, title.trim(), finalDate);
       onClose();
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const safeStudiedDate = studiedDate && studiedDate <= todayStr ? studiedDate : todayStr;
+  const computedNextDate = addDays(safeStudiedDate, currentIntervalDays);
+  const displayScheduled = formatDisplayDate(computedNextDate);
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
@@ -436,7 +451,7 @@ export function RenameTopicModal({
             <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Edit2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Rename Topic</h3>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Edit Topic</h3>
           </div>
           <button
             type="button"
@@ -461,6 +476,41 @@ export function RenameTopicModal({
               className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Date Studied</span>
+              </span>
+              <span className="text-[11px] font-normal text-slate-400 dark:text-slate-500">
+                (Up to today)
+              </span>
+            </label>
+            <input
+              type="date"
+              max={todayStr}
+              value={studiedDate}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && val > todayStr) {
+                  setStudiedDate(todayStr);
+                } else {
+                  setStudiedDate(val);
+                }
+              }}
+              required
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="p-3 bg-slate-100 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-400">
+            Next revision will be rescheduled to{" "}
+            <span className="font-semibold text-indigo-600 dark:text-indigo-300">
+              {displayScheduled}
+            </span>{" "}
+            ({currentIntervalDays === 1 ? "1 day" : `${currentIntervalDays} days`} after studied date).
+          </div>
         </div>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2 bg-slate-50 dark:bg-slate-900/60">
@@ -473,7 +523,7 @@ export function RenameTopicModal({
           </button>
           <button
             type="submit"
-            disabled={!title.trim() || isSubmitting}
+            disabled={!title.trim() || !studiedDate || isSubmitting}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs sm:text-sm font-medium transition shadow-md shadow-indigo-600/30 disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
@@ -483,6 +533,9 @@ export function RenameTopicModal({
     </BaseModal>
   );
 }
+
+// Keep export for backwards compatibility
+export const RenameTopicModal = EditTopicModal;
 
 // 6. Delete Topic Modal
 export function DeleteTopicModal({

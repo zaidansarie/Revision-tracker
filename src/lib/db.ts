@@ -221,6 +221,7 @@ export async function createTopic(
         title: cleanTitle,
         revision_count: 0,
         current_interval_index: 0,
+        studied_date: baseDate,
         last_revised_at: null,
         next_revision_date: nextRevisionDate,
       })
@@ -239,6 +240,7 @@ export async function createTopic(
     title: cleanTitle,
     revision_count: 0,
     current_interval_index: 0,
+    studied_date: baseDate,
     last_revised_at: null,
     next_revision_date: nextRevisionDate,
     created_at: new Date().toISOString(),
@@ -251,25 +253,51 @@ export async function createTopic(
   return newTopic;
 }
 
-export async function renameTopic(topicId: string, newTitle: string): Promise<void> {
-  const cleanTitle = newTitle.trim();
-  if (!cleanTitle) throw new Error("Topic title cannot be empty");
+export async function updateTopic(
+  topicId: string,
+  updates: { title?: string; studied_date?: string },
+  intervalDays?: number
+): Promise<void> {
+  const cleanTitle = updates.title ? updates.title.trim() : undefined;
+  if (cleanTitle === "") throw new Error("Topic title cannot be empty");
+
+  const fieldsToUpdate: Record<string, any> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (cleanTitle) {
+    fieldsToUpdate.title = cleanTitle;
+  }
+
+  if (updates.studied_date) {
+    fieldsToUpdate.studied_date = updates.studied_date;
+    if (intervalDays !== undefined && intervalDays > 0) {
+      fieldsToUpdate.next_revision_date = addDays(updates.studied_date, intervalDays);
+    }
+  }
 
   if (isSupabaseConfigured && supabase) {
-    await supabase
-      .from("topics")
-      .update({ title: cleanTitle, updated_at: new Date().toISOString() })
-      .eq("id", topicId);
+    await supabase.from("topics").update(fieldsToUpdate).eq("id", topicId);
     return;
   }
 
   const list = getLocal<Topic[]>(LOCAL_STORAGE_KEY_TOPICS, []);
   const idx = list.findIndex((t) => t.id === topicId);
   if (idx !== -1) {
-    list[idx].title = cleanTitle;
+    if (cleanTitle) list[idx].title = cleanTitle;
+    if (updates.studied_date) {
+      list[idx].studied_date = updates.studied_date;
+      if (intervalDays !== undefined && intervalDays > 0) {
+        list[idx].next_revision_date = addDays(updates.studied_date, intervalDays);
+      }
+    }
     list[idx].updated_at = new Date().toISOString();
     setLocal(LOCAL_STORAGE_KEY_TOPICS, list);
   }
+}
+
+export async function renameTopic(topicId: string, newTitle: string): Promise<void> {
+  return updateTopic(topicId, { title: newTitle });
 }
 
 export async function deleteTopic(topicId: string): Promise<void> {

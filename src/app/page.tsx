@@ -11,6 +11,7 @@ import {
   renameFolder,
   deleteFolder,
   createTopic,
+  updateTopic,
   renameTopic,
   deleteTopic,
   markTopicRevised,
@@ -30,7 +31,7 @@ import {
   RenameFolderModal,
   DeleteFolderModal,
   AddTopicModal,
-  RenameTopicModal,
+  EditTopicModal,
   DeleteTopicModal,
 } from "@/components/Modals";
 import { Folder as FolderIcon, Calendar, CheckCircle2, Clock } from "lucide-react";
@@ -151,8 +152,11 @@ export default function HomePage() {
     await loadData();
   };
 
-  const handleRenameTopic = async (topicId: string, newTitle: string) => {
-    await renameTopic(topicId, newTitle);
+  const handleEditTopic = async (topicId: string, newTitle: string, newStudiedDate: string) => {
+    const topic = topics.find((t) => t.id === topicId);
+    const intervalIndex = topic?.current_interval_index || 0;
+    const intervalDays = settings.intervals[intervalIndex] || 1;
+    await updateTopic(topicId, { title: newTitle, studied_date: newStudiedDate }, intervalDays);
     await loadData();
   };
 
@@ -300,9 +304,7 @@ export default function HomePage() {
                         </h3>
 
                         <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                          <span>Revision #{topic.revision_count}</span>
-                          <span>•</span>
-                          <span>Stage {topic.current_interval_index + 1}</span>
+                          <span>Revision #{topic.revision_count + 1}</span>
                         </div>
                       </div>
 
@@ -403,11 +405,16 @@ export default function HomePage() {
         onSubmit={handleAddTopic}
       />
 
-      <RenameTopicModal
+      <EditTopicModal
         topic={topicToRename}
+        currentIntervalDays={
+          topicToRename
+            ? settings.intervals[topicToRename.current_interval_index] || 1
+            : settings.intervals[0] || 1
+        }
         isOpen={Boolean(topicToRename)}
         onClose={() => setTopicToRename(null)}
-        onSubmit={handleRenameTopic}
+        onSubmit={handleEditTopic}
       />
 
       <DeleteTopicModal

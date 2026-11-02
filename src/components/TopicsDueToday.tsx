@@ -158,8 +158,6 @@ export default function TopicsDueToday({
 
                   <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <span>Revision #{topic.revision_count + 1}</span>
-                    <span>•</span>
-                    <span>Stage {topic.current_interval_index + 1}</span>
                   </div>
                 </div>
 
