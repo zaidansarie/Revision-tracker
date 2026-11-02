@@ -5,10 +5,15 @@ export const metadata: Metadata = {
   title: "ZaidRev - Spaced Revision Tracker",
   description: "Personal spaced revision tracker for phone and laptop",
   applicationName: "ZaidRev",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "ZaidRev",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
   },
 };
 

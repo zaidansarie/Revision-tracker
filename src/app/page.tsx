@@ -17,12 +17,14 @@ import {
   saveUserSettings,
 } from "@/lib/db";
 import { isClientAuthenticated } from "@/lib/auth";
-import { getTodayDateString, calculateNextRevision, parseLocalDate } from "@/lib/date-utils";
+import { getTodayDateString, calculateNextRevision, parseLocalDate, formatDisplayDate } from "@/lib/date-utils";
+import { registerServiceWorker, checkAndTriggerMorningReminder } from "@/lib/notifications";
 import Header from "@/components/Header";
 import TopicsDueToday from "@/components/TopicsDueToday";
 import FolderSection from "@/components/FolderSection";
 import FolderDetailView from "@/components/FolderDetailView";
 import SettingsModal from "@/components/SettingsModal";
+import SearchBar from "@/components/SearchBar";
 import {
   CreateFolderModal,
   RenameFolderModal,
@@ -31,6 +33,7 @@ import {
   RenameTopicModal,
   DeleteTopicModal,
 } from "@/components/Modals";
+import { Folder as FolderIcon, Calendar, CheckCircle2, Clock } from "lucide-react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -47,6 +50,9 @@ export default function HomePage() {
     theme: "dark",
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  // Search Query
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Active Selected Folder for drill-down view
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -85,20 +91,25 @@ export default function HomePage() {
       } else {
         document.documentElement.classList.add("dark");
       }
+
+      // Check morning notifications for topics due today
+      const due = tList.filter((t) => t.next_revision_date <= todayStr);
+      checkAndTriggerMorningReminder(due);
     } catch (err) {
       console.error("Failed to load revision data:", err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [todayStr]);
 
-  // Auth gate check
+  // Auth gate check & PWA Service worker registration
   useEffect(() => {
     if (!isClientAuthenticated()) {
       router.push("/login");
     } else {
       setAuthChecked(true);
       loadData();
+      registerServiceWorker();
     }
   }, [router, loadData]);
 
@@ -161,11 +172,27 @@ export default function HomePage() {
     }
   };
 
+  // Map folder id to name
+  const folderMap = new Map<string, string>();
+  folders.forEach((f) => folderMap.set(f.id, f.name));
+
   // Topics due today across all folders
   const topicsDueToday = topics.filter((t) => t.next_revision_date <= todayStr);
 
   // Active folder object
   const activeFolder = folders.find((f) => f.id === selectedFolderId) || null;
+
+  // Filter topics based on search query
+  const queryClean = searchQuery.trim().toLowerCase();
+  const searchResults = queryClean
+    ? topics.filter((t) => {
+        const folderName = folderMap.get(t.folder_id) || "";
+        return (
+          t.title.toLowerCase().includes(queryClean) ||
+          folderName.toLowerCase().includes(queryClean)
+        );
+      })
+    : [];
 
   // Format today's date nicely for header
   const todayDateObj = parseLocalDate(todayStr);
@@ -193,9 +220,109 @@ export default function HomePage() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-        {/* If a folder is clicked, show Folder Detail View */}
-        {activeFolder ? (
+      <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+        {/* Search Bar across all topics & folders */}
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          totalTopicsCount={topics.length}
+        />
+
+        {/* If Search is active, show search results */}
+        {queryClean ? (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>Search Results</span>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                    {searchResults.length}
+                  </span>
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  Matching "{searchQuery}" across all folders
+                </p>
+              </div>
+            </div>
+
+            {searchResults.length === 0 ? (
+              <div className="p-8 text-center rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  No topics found matching "{searchQuery}"
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Try searching for a different keyword or topic title.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {searchResults.map((topic) => {
+                  const isDue = topic.next_revision_date <= todayStr;
+                  const isOverdue = topic.next_revision_date < todayStr;
+                  const dateLabel = formatDisplayDate(topic.next_revision_date, todayStr);
+                  const folderName = folderMap.get(topic.folder_id) || "General";
+
+                  return (
+                    <div
+                      key={topic.id}
+                      className="p-4 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col justify-between gap-3 shadow-sm"
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedFolderId(topic.folder_id);
+                              setSearchQuery("");
+                            }}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-700/60 max-w-[180px] truncate hover:border-indigo-400 transition"
+                            title={`Open folder ${folderName}`}
+                          >
+                            <FolderIcon className="w-3 h-3 flex-shrink-0" />
+                            <span className="truncate">{folderName}</span>
+                          </button>
+
+                          <span
+                            className={`text-[11px] font-medium px-2 py-0.5 rounded-md flex items-center gap-1 ${
+                              isOverdue
+                                ? "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/20"
+                                : isDue
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/60"
+                            }`}
+                          >
+                            <Clock className="w-3 h-3" />
+                            <span>{dateLabel}</span>
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 break-words">
+                          {topic.title}
+                        </h3>
+
+                        <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                          <span>Revision #{topic.revision_count}</span>
+                          <span>•</span>
+                          <span>Stage {topic.current_interval_index + 1}</span>
+                        </div>
+                      </div>
+
+                      {isDue && (
+                        <button
+                          onClick={() => handleMarkRevised(topic)}
+                          className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Mark Revised</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        ) : activeFolder ? (
+          /* If a folder is clicked, show Folder Detail View */
           <FolderDetailView
             folder={activeFolder}
             topics={topics}
@@ -210,7 +337,7 @@ export default function HomePage() {
             onOpenDeleteTopic={(topic) => setTopicToDelete(topic)}
           />
         ) : (
-          /* Homepage View: 
+          /* Default Homepage View:
              1. Topics to be revised today (filtered by All or folder-wise)
              2. Folder section below it
           */
@@ -241,6 +368,8 @@ export default function HomePage() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
+        folders={folders}
+        topics={topics}
         onSave={handleSaveSettings}
       />
 
