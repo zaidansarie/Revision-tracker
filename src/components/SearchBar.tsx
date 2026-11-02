@@ -7,13 +7,19 @@ interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   totalTopicsCount: number;
+  folderName?: string;
 }
 
 export default function SearchBar({
   searchQuery,
   onSearchChange,
   totalTopicsCount,
+  folderName,
 }: SearchBarProps) {
+  const placeholderText = folderName
+    ? `Search topics in "${folderName}" (${totalTopicsCount} topics)...`
+    : `Search all ${totalTopicsCount} topics across folders...`;
+
   return (
     <div className="relative w-full">
       <div className="relative flex items-center">
@@ -24,7 +30,7 @@ export default function SearchBar({
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={`Search all ${totalTopicsCount} topics across folders...`}
+          placeholder={placeholderText}
           className="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition shadow-sm"
         />
         {searchQuery && (
@@ -40,4 +46,3 @@ export default function SearchBar({
     </div>
   );
 }
-

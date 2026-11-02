@@ -186,14 +186,19 @@ export default function HomePage() {
   // Active folder object
   const activeFolder = folders.find((f) => f.id === selectedFolderId) || null;
 
+  // Filter topics based on current view scope (folder vs all)
+  const scopedTopics = activeFolder
+    ? topics.filter((t) => t.folder_id === activeFolder.id)
+    : topics;
+
   // Filter topics based on search query
   const queryClean = searchQuery.trim().toLowerCase();
   const searchResults = queryClean
-    ? topics.filter((t) => {
+    ? scopedTopics.filter((t) => {
         const folderName = folderMap.get(t.folder_id) || "";
         return (
           t.title.toLowerCase().includes(queryClean) ||
-          folderName.toLowerCase().includes(queryClean)
+          (!activeFolder && folderName.toLowerCase().includes(queryClean))
         );
       })
     : [];
@@ -225,14 +230,15 @@ export default function HomePage() {
       />
 
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
-        {/* Search Bar across all topics & folders */}
+        {/* Search Bar scoped to current folder or all */}
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          totalTopicsCount={topics.length}
+          totalTopicsCount={scopedTopics.length}
+          folderName={activeFolder?.name}
         />
 
-        {/* If Search is active, show search results */}
+        {/* If Search is active, show scoped search results */}
         {queryClean ? (
           <section className="space-y-4">
             <div className="flex items-center justify-between">
@@ -244,7 +250,9 @@ export default function HomePage() {
                   </span>
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                  Matching "{searchQuery}" across all folders
+                  {activeFolder
+                    ? `Matching "${searchQuery}" inside folder "${activeFolder.name}"`
+                    : `Matching "${searchQuery}" across all folders`}
                 </p>
               </div>
             </div>
@@ -329,7 +337,10 @@ export default function HomePage() {
             folder={activeFolder}
             topics={topics}
             todayStr={todayStr}
-            onBack={() => setSelectedFolderId(null)}
+            onBack={() => {
+              setSelectedFolderId(null);
+              setSearchQuery("");
+            }}
             onMarkRevised={handleMarkRevised}
             onOpenAddTopic={(folderId) => {
               const f = folders.find((item) => item.id === folderId);
@@ -356,7 +367,10 @@ export default function HomePage() {
             <FolderSection
               folders={folders}
               topics={topics}
-              onSelectFolder={(folder) => setSelectedFolderId(folder.id)}
+              onSelectFolder={(folder) => {
+                setSelectedFolderId(folder.id);
+                setSearchQuery("");
+              }}
               onOpenCreateFolder={() => setIsCreateFolderOpen(true)}
               onOpenRenameFolder={(folder) => setFolderToRename(folder)}
               onOpenDeleteFolder={(folder) => setFolderToDelete(folder)}
