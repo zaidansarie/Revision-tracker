@@ -46,9 +46,11 @@ CREATE TABLE IF NOT EXISTS public.user_settings (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Insert default settings for zaid if not exists
+-- Insert default settings for zaid and user demo if not exists
 INSERT INTO public.user_settings (user_id, intervals, theme)
-VALUES ('zaid', '[1, 3, 7, 30]'::jsonb, 'dark')
+VALUES 
+    ('zaid', '[1, 3, 7, 30]'::jsonb, 'dark'),
+    ('user', '[1, 3, 7, 30]'::jsonb, 'dark')
 ON CONFLICT (user_id) DO NOTHING;
 
 -- Row Level Security (RLS) policies

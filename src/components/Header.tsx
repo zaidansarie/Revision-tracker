@@ -1,19 +1,22 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { BookOpen, Menu, Settings as SettingsIcon, LogOut, Calendar } from "lucide-react";
+import { BookOpen, Menu, Settings as SettingsIcon, LogOut, Calendar, UserCheck } from "lucide-react";
 import { clearClientSession } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   onOpenSettings: () => void;
   currentDateFormatted: string;
+  currentUser?: string;
 }
 
-export default function Header({ onOpenSettings, currentDateFormatted }: HeaderProps) {
+export default function Header({ onOpenSettings, currentDateFormatted, currentUser = "zaid" }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const isDemo = currentUser.trim().toLowerCase() === "user";
 
   // Close menu on click outside
   useEffect(() => {
@@ -40,9 +43,16 @@ export default function Header({ onOpenSettings, currentDateFormatted }: HeaderP
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              ZaidRev
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                ZaidRev
+              </h1>
+              {isDemo && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Guest Demo
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <Calendar className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
               <span>{currentDateFormatted}</span>
@@ -55,13 +65,26 @@ export default function Header({ onOpenSettings, currentDateFormatted }: HeaderP
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
-            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:active:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition"
+            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:active:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+            <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+              {/* User Account Info */}
+              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800/80">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Signed In As
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <UserCheck className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                    {isDemo ? "user (Guest Demo)" : "zaid (Personal)"}
+                  </span>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   setMenuOpen(false);

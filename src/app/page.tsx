@@ -16,8 +16,9 @@ import {
   deleteTopic,
   markTopicRevised,
   saveUserSettings,
+  seedDemoDataIfEmpty,
 } from "@/lib/db";
-import { isClientAuthenticated } from "@/lib/auth";
+import { isClientAuthenticated, getClientUser } from "@/lib/auth";
 import { getTodayDateString, calculateNextRevision, parseLocalDate, formatDisplayDate } from "@/lib/date-utils";
 import { registerServiceWorker, checkAndTriggerMorningReminder } from "@/lib/notifications";
 import Header from "@/components/Header";
@@ -41,6 +42,9 @@ export default function HomePage() {
 
   // Authentication check
   const [authChecked, setAuthChecked] = useState(false);
+
+  // Current User
+  const [currentUser, setCurrentUser] = useState<string>("zaid");
 
   // Core Data
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -75,12 +79,20 @@ export default function HomePage() {
   const todayStr = getTodayDateString();
 
   // Load all user data
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (forcedUser?: string) => {
     try {
+      const activeUser = forcedUser || getClientUser();
+      setCurrentUser(activeUser);
+
+      // Seed starter data for guest/demo reviewer on initial visit
+      if (activeUser === "user") {
+        await seedDemoDataIfEmpty(activeUser);
+      }
+
       const [fList, tList, sObj] = await Promise.all([
-        getFolders("zaid"),
-        getTopics("zaid"),
-        getUserSettings("zaid"),
+        getFolders(activeUser),
+        getTopics(activeUser),
+        getUserSettings(activeUser),
       ]);
       setFolders(fList);
       setTopics(tList);
@@ -109,7 +121,9 @@ export default function HomePage() {
       router.push("/login");
     } else {
       setAuthChecked(true);
-      loadData();
+      const user = getClientUser();
+      setCurrentUser(user);
+      loadData(user);
       registerServiceWorker();
     }
   }, [router, loadData]);
@@ -127,52 +141,52 @@ export default function HomePage() {
       todayStr
     );
 
-    await markTopicRevised(topic.id, nextIndex, nextDate, todayStr);
-    await loadData();
+    await markTopicRevised(topic.id, nextIndex, nextDate, todayStr, currentUser);
+    await loadData(currentUser);
   };
 
   // Folder CRUD
   const handleCreateFolder = async (name: string) => {
-    await createFolder(name, "zaid");
-    await loadData();
+    await createFolder(name, currentUser);
+    await loadData(currentUser);
   };
 
   const handleRenameFolder = async (folderId: string, newName: string) => {
-    await renameFolder(folderId, newName);
-    await loadData();
+    await renameFolder(folderId, newName, currentUser);
+    await loadData(currentUser);
   };
 
   const handleDeleteFolder = async (folderId: string) => {
-    await deleteFolder(folderId);
+    await deleteFolder(folderId, currentUser);
     if (selectedFolderId === folderId) {
       setSelectedFolderId(null);
     }
-    await loadData();
+    await loadData(currentUser);
   };
 
   // Topic CRUD
   const handleAddTopic = async (title: string, folderId: string, studiedDate: string) => {
     const firstIntervalDays = settings.intervals[0] || 1;
-    await createTopic(title, folderId, firstIntervalDays, studiedDate, "zaid");
-    await loadData();
+    await createTopic(title, folderId, firstIntervalDays, studiedDate, currentUser);
+    await loadData(currentUser);
   };
 
   const handleEditTopic = async (topicId: string, newTitle: string, newStudiedDate: string) => {
     const topic = topics.find((t) => t.id === topicId);
     const intervalIndex = topic?.current_interval_index || 0;
     const intervalDays = settings.intervals[intervalIndex] || 1;
-    await updateTopic(topicId, { title: newTitle, studied_date: newStudiedDate }, intervalDays);
-    await loadData();
+    await updateTopic(topicId, { title: newTitle, studied_date: newStudiedDate }, intervalDays, currentUser);
+    await loadData(currentUser);
   };
 
   const handleDeleteTopic = async (topicId: string) => {
-    await deleteTopic(topicId);
-    await loadData();
+    await deleteTopic(topicId, currentUser);
+    await loadData(currentUser);
   };
 
   // Settings Save
   const handleSaveSettings = async (intervals: number[], theme: "dark" | "light") => {
-    const updated = await saveUserSettings("zaid", intervals, theme);
+    const updated = await saveUserSettings(currentUser, intervals, theme);
     setSettings(updated);
     if (theme === "light") {
       document.documentElement.classList.remove("dark");
@@ -232,6 +246,7 @@ export default function HomePage() {
       <Header
         currentDateFormatted={formattedToday}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        currentUser={currentUser}
       />
 
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">

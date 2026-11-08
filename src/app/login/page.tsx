@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { checkCredentials, setClientSession } from "@/lib/auth";
-import { Lock, User, AlertCircle, BookOpen } from "lucide-react";
+import { Lock, User, AlertCircle, BookOpen, KeyRound, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,6 +31,12 @@ export default function LoginPage() {
       setError("Invalid username or password.");
       setIsLoading(false);
     }
+  };
+
+  const handleFillDemo = () => {
+    setUsername("user");
+    setPassword("user2467::");
+    setError(null);
   };
 
   return (
@@ -102,6 +108,29 @@ export default function LoginPage() {
             {isLoading ? "Signing in..." : "Log In"}
           </button>
         </form>
+
+        {/* Demo Credentials Box for Resume Reviewers */}
+        <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
+          <div className="p-3.5 bg-indigo-50/60 dark:bg-slate-950/60 border border-indigo-100 dark:border-slate-800 rounded-xl text-center">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-indigo-900 dark:text-indigo-300 mb-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Resume & Visitor Demo Account</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-mono">
+              <span>User: <strong className="text-indigo-600 dark:text-indigo-400">user</strong></span>
+              <span>•</span>
+              <span>Pass: <strong className="text-indigo-600 dark:text-indigo-400">user2467::</strong></span>
+            </div>
+            <button
+              type="button"
+              onClick={handleFillDemo}
+              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-slate-700 px-3 py-1.5 rounded-lg shadow-sm transition cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <span>One-Click Fill Demo Credentials</span>
+            </button>
+          </div>
+        </div>
       </div>
     </main>
   );

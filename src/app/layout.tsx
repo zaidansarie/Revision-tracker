@@ -36,7 +36,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const settings = JSON.parse(localStorage.getItem('zaidrev_settings') || '{}');
+                const user = localStorage.getItem('zaidrev_user') || 'zaid';
+                const userSettings = localStorage.getItem('zaidrev_settings_' + user);
+                const settings = JSON.parse(userSettings || localStorage.getItem('zaidrev_settings') || '{}');
                 if (settings.theme === 'light') {
                   document.documentElement.classList.remove('dark');
                 } else {
