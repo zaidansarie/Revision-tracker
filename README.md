@@ -14,9 +14,6 @@ A clean, responsive revision tracking progressive web application designed for p
 
 1. **Authentication & Multi-User Data Isolation**
    - Session-based protection on all revision routes with Next.js Edge Middleware.
-   - **Personal Account** (Private revision records):
-     - Username: `zaid`
-     - Password: `zai827--`
    - **Guest / Demo Account** (For resume reviewers, recruiters & testing):
      - Username: `user`
      - Password: `user2467::`
